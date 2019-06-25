@@ -1,7 +1,8 @@
+const { fixClassName } = require('./helpers/className.js');
+
 export default function transformer(file, api) {
 	const j = api.jscodeshift,
         root = j(file.source);
-  //const babelTypes = require('babel-types');
 
   root
 		.find(j.ImportDeclaration)
@@ -13,9 +14,6 @@ export default function transformer(file, api) {
         j(path).replaceWith(`import css from '${newName}';`)
 			}
 		})
-
-  const fixClassName = oldClassName => oldClassName
-    .replace(/\-+./gi, x => x.substring(x.length-1).toUpperCase());
 
   root
     .find(j.JSXAttribute)
