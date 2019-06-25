@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const glob = require("glob"),
+		fs = require('fs'),
+		program = require('commander');
+
+const ignorePatterns = (val, memo) => [...memo, val];
+
+program
+	.version('0.1.0')
+	.usage('[options] <file ...>')
+	.option('-i, --ignore [pattern]', 'Ignore a pattern', ignorePatterns, [])
+	.parse(process.argv);
+
+const pattern = [...program.args, "**/*.css"].join('/');
+console.log(`Looking for files matching pattern: ${pattern}`);
+
+const ignore = file => {
+	return program.ignore
+		.reduce(
+			(acc, cv) => !(new RegExp(cv)).test(file) && acc
+			, true
+		);
+};
+
+glob(pattern, (err, files) => {
+	files
+		.filter(file => !(/\.module\.css$/.test(file)))
+		.filter(ignore)
+		.forEach(file => {
+			try {
+				const newName = `${file.substring(0, file.length - 4)}.module.css`;
+				if(fs.existsSync(newName)) {
+					throw new Error(`Can't rename, a file allready exists at ${newName}`);
+				}
+				fs.rename(file, newName, err => {
+					if(err) throw err;
+				});
+				console.log(`Renaming file "${file}" to "${newName}"`);
+			} catch(e) {
+				console.error(`Error renaming file`, e);
+			}
+		});
+});

@@ -1,0 +1,24 @@
+{
+  "name": "codemods",
+  "version": "1.0.0",
+  "description": "Example usage:",
+  "main": "index.js",
+  "private": "true",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheKnarf/codemods.git"
+  },
+  "author": "Frank Lyder Bredland <fl@nyggen.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheKnarf/codemods/issues"
+  },
+  "homepage": "https://github.com/TheKnarf/codemods#readme",
+  "devDependencies": {
+    "commander": "^2.20.0",
+    "glob": "^7.1.4"
+  }
+}
