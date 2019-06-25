@@ -1,8 +1,10 @@
 const { fixClassName } = require('./helpers/className.js');
 
 export default function transformer(file, api) {
-	const { source } = file;
+	if(!/\.css$/.test(file.path)) {
+		return;
+	}
 
-	//console.log(file);
+	const { source } = file;
 	return source.replace(/\.[^ /(:;]+/gi, fixClassName);
 }

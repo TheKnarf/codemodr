@@ -1,43 +1,13 @@
-const { fixClassName } = require('./helpers/className.js');
+const js = require('./css-module-js.js').default;
+const css = require('./css-module-css.js').default;
 
 export default function transformer(file, api) {
-	const j = api.jscodeshift,
-        root = j(file.source);
+	const updatedSource = js(file, api);
+	if(typeof updatedSource == 'undefined' || updatedSource == null) {
+		return css(file, api);
+	}
 
-  root
-		.find(j.ImportDeclaration)
-		.forEach(path => {
-			const importV = path.value.source.value;
-
-			if(/\.css$/.test(importV) && !/\.module\.css$/.test(importV)) {
-        const newName = importV.substring(0, importV.length - 4) + '.module.css';
-        j(path).replaceWith(`import css from '${newName}';`)
-			}
-		})
-
-  root
-    .find(j.JSXAttribute)
-    .filter(path => path.value.name.name == 'className')
-    .forEach(path => {
-      j(path)
-        .find(j.StringLiteral)
-        .forEach(path => {
-          if(!/^\ *$/.test(path.value.value)) {
-            const newClassName = path.value.value
-              .split(' ')
-              .map(fixClassName)
-              .map(name => `css.${name}`);
-
-            if(newClassName.length == 1) {
-              j(path).replaceWith(`{${newClassName[0]}}`);
-            } else {
-              const arr = newClassName.join(',');
-              j(path).replaceWith(`{[${arr}].join(' ')}`);;
-            }
-          }
-        });
-    });
-
-  return root.toSource();
+	return updatedSource;
 }
+
 export const parser = 'tsx';
