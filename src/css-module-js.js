@@ -32,11 +32,13 @@ export default function transformer(file, api) {
               .map(fixClassName)
               .map(name => `css.${name}`);
 
+				const wrap = v => `{${v}}`; // 3 cases I need to handle: - when its used in className, - when its used somewhere else, - when its used as part of [ [css.name]: true ]
+
             if(newClassName.length == 1) {
-              j(path).replaceWith(`{${newClassName[0]}}`);
+              j(path).replaceWith(wrap(newClassName[0]));
             } else {
               const arr = newClassName.join(',');
-              j(path).replaceWith(`{[${arr}].join(' ')}`);;
+              j(path).replaceWith(wrap(`[${arr}].join(' ')`));;
             }
           }
         });
