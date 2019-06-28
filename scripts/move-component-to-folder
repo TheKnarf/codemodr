@@ -1,0 +1,89 @@
+#!/usr/bin/env node
+
+const glob = require("glob"),
+		fs = require('fs'),
+		path = require('path'),
+		program = require('commander');
+
+const ignorePatterns = (val, memo) => [...memo, val];
+
+program
+	.version('0.1.0')
+	.usage('[options] <file ...>')
+	.option('-i, --ignore [pattern]', 'Ignore a pattern', ignorePatterns, [])
+	.parse(process.argv);
+
+const pattern = [...program.args, "**/*.jsx"].join('/');
+console.log(`Looking for files matching pattern: ${pattern}`);
+
+const ignore = file => {
+	return program.ignore
+		.reduce(
+			(acc, cv) => !(new RegExp(cv)).test(file) && acc
+			, true
+		);
+};
+
+const parentFolder = file => {
+	const parentFolders = path
+		.dirname(file)
+		.split(path.sep);
+
+	return parentFolders[parentFolders.length -1];
+}
+
+const allreadyInComponentFolder = file =>
+	parentFolder(file) == path.basename(
+		file,
+		path.extname(path.basename(file))
+	);
+
+const validFilename   = file => /\.(js|ts)x?$/.test(file);
+const isTestFile      = file => /\.(test|tests|spec)\.(js|ts)x?$/.test(file);
+const isStorybookFile = file => /\.stories\.(js|ts)x?$/.test(file);
+const isStyle         = file => /\.(css|less|sass|scss)$/.test(file);
+
+glob(pattern, (err, files) => {
+	files
+		.filter(ignore)
+		.filter(validFilename)
+		.filter(file => !allreadyInComponentFolder(file)
+			          && !isTestFile(file)
+			          && !isStorybookFile(file)
+		             && !isStyle(file)
+		)
+		.forEach(file => {
+			try {
+				const baseNameWithoutExt = path.basename(
+					file,
+					path.extname(path.basename(file))
+				);
+				const newFolderName = path.dirname(file) + path.sep + baseNameWithoutExt;
+				if(fs.existsSync(newFolderName)) {
+					throw new Error(`Can't create folder, folder with name "${newFolderName}" allready exists`);
+				}
+				fs.mkdirSync(newFolderName);
+
+				const newFilename = newFolderName + path.sep + path.basename(file);
+				console.log(`Moving ${file} to ${newFilename}`);
+				fs.renameSync(file, newFilename);
+
+				glob(path.dirname(file) + path.sep + '**/*', (err, files) => {
+					files
+						.filter(ignore)
+						.filter(file => path.basename(file).startsWith(baseNameWithoutExt))
+						.filter(file => isTestFile(file) || isStorybookFile(file) || isStyle(file))
+						.forEach(file => {
+							const newFilename = newFolderName + path.sep + path.basename(file);
+							console.log(`Moving ${file} to ${newFilename}`);
+							fs.renameSync(file, newFilename);
+						});
+				});
+
+				const newIndexFile = newFolderName + path.sep + 'index.js';
+				fs.writeFileSync(newIndexFile, `export { default } from './${path.basename(file)}';`);
+			} catch(e) {
+				console.error(e);
+			}
+		});
+});
