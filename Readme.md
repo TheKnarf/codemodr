@@ -1,5 +1,7 @@
 # Codemods
 
+[![NpmVersion](https://img.shields.io/npm/v/codemodr.svg)](https://www.npmjs.com/package/codemodr)
+
 Example usage:
 
 ```
