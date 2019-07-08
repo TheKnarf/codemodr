@@ -19,6 +19,7 @@
   "homepage": "https://github.com/TheKnarf/codemods#readme",
   "devDependencies": {
     "commander": "^2.20.0",
-    "glob": "^7.1.4"
+    "glob": "^7.1.4",
+    "jest": "^24.8.0"
   }
 }
