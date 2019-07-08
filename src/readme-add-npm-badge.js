@@ -11,6 +11,7 @@ const runner = function* ({ matchFile, getFile, getSource, updateSource }) {
 	if(source.indexOf(npmVersion) === -1) {
 		const sourceByNewlines = source.split("\n");
 		sourceByNewlines.splice(2, 0, npmVersion);
+		sourceByNewlines.splice(3, 0, "");
 		const newSource = sourceByNewlines.join("\n");
 
 		yield updateSource(newSource);
