@@ -2,26 +2,26 @@
   "name": "codemodr",
   "version": "0.1.0",
   "description": "",
-  "main": "src/runner/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheKnarf/codemods.git"
+    "url": "git+https://github.com/TheKnarf/codemodr.git"
   },
   "author": "Frank Lyder Bredland <fl@nyggen.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheKnarf/codemods/issues"
+    "url": "https://github.com/TheKnarf/codemodr/issues"
   },
-  "homepage": "https://github.com/TheKnarf/codemods#readme",
+  "homepage": "https://github.com/TheKnarf/codemodr#readme",
   "devDependencies": {
     "commander": "^2.20.0",
     "glob": "^7.1.4",
     "jest": "^24.8.0"
   },
   "bin": {
-    "codemodr": "./src/runner/index.js"
+    "codemodr": "./src/index.js"
   }
 }
