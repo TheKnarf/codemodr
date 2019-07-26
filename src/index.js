@@ -39,8 +39,6 @@ const findCodemod = async (transform, search_paths) => {
 
 (async ()=>{
 	if(await async.fileExists(config_file_path)) {
-	// TODO: check "~/.codemodr" for settings
-	//       One setting to support is lookup paths for codemods so that you can keep codemods in a fixed folder
 		console.log(`Loading config file at ${config_file_path}`);
 		let config_content;
 		try {
@@ -68,6 +66,9 @@ const findCodemod = async (transform, search_paths) => {
 		if(typeof generator.default == 'function') generator = generator.default;
 	} catch(e) {
 		console.error(e);
+	}
+	if(typeof generator !== 'function') {
+		return console.error('Generator is not a function, something went wrong loading codemod');
 	}
 
 	const files = await async.glob(program.args[0]);
@@ -98,9 +99,11 @@ const findCodemod = async (transform, search_paths) => {
 					sendNext = await async.readFile(file);
 				break;
 				case actions.updateSource().type:
-					console.log('updateSource');
 					await async.writeFile(file, value.source);
 					console.log(`${file} updated`);
+				case actions.deleteSource().type:
+					console.log('deleteSource');
+					await async.deleteFile(file);
 				break;
 				default:
 					//console.log(output);

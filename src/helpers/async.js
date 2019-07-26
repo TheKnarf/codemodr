@@ -15,6 +15,12 @@ const writeFile = async (file, data) => new Promise((resolve, reject) =>
 	})
 );
 
+const deleteFile = async (file) => new Promise((resolve, reject) =>
+	fs.unlink(file, (err) => {
+		if(err) return reject(err);
+	})
+);
+
 const glob = async (pattern) => new Promise((resolve, reject) =>
 	globCallback(pattern, (err, files) => {
 		if(err) return reject(err);
@@ -40,6 +46,7 @@ const mkdir = async (path) => new Promise((resolve, reject) =>
 module.exports = {
 	readFile,
 	writeFile,
+	deleteFile,
 	fileExists,
 	glob,
 	mkdir,

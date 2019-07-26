@@ -17,9 +17,20 @@ const updateSource = source => ({
 	source,
 });
 
+const deleteSource = () => ({
+	type: 'deleteSource',
+});
+
+const fileExists = filename => ({
+	type: 'fileExists',
+	filename,
+});
+
 module.exports = {
 	matchFile,
 	getFile,
 	getSource,
 	updateSource,
+	deleteSource,
+	fileExists,
 };
