@@ -1,7 +1,7 @@
 {
   "name": "codemodr",
   "version": "0.2.0",
-  "description": "",
+  "description": "A codemod runner supporting ES6 generators",
   "main": "src/index.js",
   "scripts": {
     "test": "jest"
@@ -15,11 +15,13 @@
   "bugs": {
     "url": "https://github.com/TheKnarf/codemodr/issues"
   },
-  "homepage": "https://github.com/TheKnarf/codemodr#readme",
+  "homepage": "https://github.com/TheKnarf/codemodr",
   "devDependencies": {
-    "commander": "^2.20.0",
-    "glob": "^7.1.4",
     "jest": "^24.8.0"
+  },
+  "dependencies": {
+    "commander": "^2.20.0",
+    "glob": "^7.1.4"
   },
   "bin": {
     "codemodr": "./src/index.js"
