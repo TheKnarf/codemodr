@@ -25,6 +25,6 @@
     "codemodr": "./src/index.js"
   },
   "files": [
-	"src/**/*"
+    "src/**/*"
   ]
 }

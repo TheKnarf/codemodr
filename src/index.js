@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-/*
- * Custom codemods runner that support yieldables
- */
-
-const fs = require('fs'),
+const actions = require('./actions.js'),
+		async = require('./helpers/async'),
+		os = require('os'),
 		path = require('path'),
-		glob = require('glob'),
 		commander = require('commander'),
 		program = new commander.Command();
 
@@ -13,7 +10,7 @@ program
 	.version('0.0.1')
 	.usage('[options] <files ...>')
 	.description('Codemods runner supporting yieldables')
-	.option('-t, --transform <file>', 'path to the transform codemod', './transform.js')
+	.option('-t, --transform <file>', 'path to the codemod')
 	.option('-d, --dry', 'dry run, no changes are made to files', false)
 
 program.parse(process.argv);
@@ -21,37 +18,59 @@ program.parse(process.argv);
 if( process.argv.length < 3 )
 	return program.outputHelp();
 
-if(!fs.existsSync(program.transform)) {
-	return console.error(`Couldn't find ${program.transform}, maybe you forgot to choose codemod using -t?`);
+const config_file_path = path.resolve(os.homedir() + '/.codemodr');
+let codemod_search_paths = ['./'];
+
+const findCodemod = async (transform, search_paths) => {
+	const results = await Promise.all(search_paths.map(async search_path => {
+		return await async.fileExists(path.join(search_path, transform));
+	}));
+
+	const index = results.findIndex(id=>id);
+	if(index === -1) {
+		console.log(results, search_paths, "\n\n");
+		throw new Error(`Couldn't find transform '${transform}'`);
+	}
+
+	const filename = path.join(search_paths[index], transform);
+
+	return await async.readFile(filename);
 }
 
-const asyncReadFile = async (file, encoding='utf8') => new Promise((resolve, reject) =>
-	fs.readFile(file, encoding, (err, content) => {
-		if(err) return reject(err);
-		resolve(content);
-	})
-);
-
-const asyncWriteFile = async (file, content) => new Promise((resolve, reject) =>
-	fs.writeFile(file, content, (err) => {
-		if(err) return reject(err);
-		resolve();
-	})
-);
-
-const asyncGlob = async (pattern) => new Promise((resolve, reject) =>
-	glob(pattern, (err, files) => {
-		if(err) return reject(err);
-		resolve(files);
-	})
-);
-
 (async ()=>{
-	const actions = require('./actions.js');
-	const content = await asyncReadFile(program.transform);	
+	if(await async.fileExists(config_file_path)) {
+	// TODO: check "~/.codemodr" for settings
+	//       One setting to support is lookup paths for codemods so that you can keep codemods in a fixed folder
+		console.log(`Loading config file at ${config_file_path}`);
+		let config_content;
+		try {
+			config_content = await async.readFile(config_file_path);
+		} catch(e) {
+			console.error(e);
+		}
+
+		const config = eval(config_content);
+		if(Array.isArray(config.codemods)) {
+			config.codemods.forEach(({ folder }) => codemod_search_paths.push(folder));
+		}
+	}
+
+	let content;
+	try {
+		content = await findCodemod(program.transform, codemod_search_paths);
+	} catch(e) {
+		console.error(e);
+	}
 	
-	const generator = eval(content).default;
-	const files = await asyncGlob(program.args[0]);
+	let generator;
+	try {
+		generator = eval(content);
+		if(typeof generator.default == 'function') generator = generator.default;
+	} catch(e) {
+		console.error(e);
+	}
+
+	const files = await async.glob(program.args[0]);
 
 	files.forEach(async (file) => {
 		const runner = (generator)(actions);
@@ -71,13 +90,16 @@ const asyncGlob = async (pattern) => new Promise((resolve, reject) =>
 						return;
 				break;
 				case actions.getFile().type:
-					sendNext = await asyncReadFile(value.filename);
+					console.log('getFile', value.filename);
+					sendNext = await async.readFile(value.filename);
 				break;
 				case actions.getSource().type:
-					sendNext = await asyncReadFile(file);
+					console.log('getSource', file);
+					sendNext = await async.readFile(file);
 				break;
 				case actions.updateSource().type:
-					await asyncWriteFile(file, value.source);
+					console.log('updateSource');
+					await async.writeFile(file, value.source);
 					console.log(`${file} updated`);
 				break;
 				default:
