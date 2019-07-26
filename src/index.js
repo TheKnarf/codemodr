@@ -85,25 +85,29 @@ const findCodemod = async (transform, search_paths) => {
 
 			if(typeof value == 'undefined') continue;
 
+			const log = (...args) => console.log(`(${program.transform}) ${file}:`, ...args);
+
 			switch(value.type) {
 				case actions.matchFile().type:
 					if(!value.match.test(file))
 						return;
 				break;
 				case actions.getFile().type:
-					console.log('getFile', value.filename);
+					log('getFile', value.filename);
 					sendNext = await async.readFile(value.filename);
 				break;
 				case actions.getSource().type:
-					console.log('getSource', file);
+					log('getSource');
 					sendNext = await async.readFile(file);
 				break;
 				case actions.updateSource().type:
 					await async.writeFile(file, value.source);
-					console.log(`${file} updated`);
+					log('updateSource');
 				case actions.deleteSource().type:
-					console.log('deleteSource');
+					log('deleteSource');
 					await async.deleteFile(file);
+				case actions.log().type:
+					log(...value.args);
 				break;
 				default:
 					//console.log(output);

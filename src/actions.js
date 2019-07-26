@@ -26,6 +26,11 @@ const fileExists = filename => ({
 	filename,
 });
 
+const log = (...args) => ({
+	type: 'log',
+	args,
+});
+
 module.exports = {
 	matchFile,
 	getFile,
@@ -33,4 +38,5 @@ module.exports = {
 	updateSource,
 	deleteSource,
 	fileExists,
+	log,
 };
