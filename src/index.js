@@ -89,8 +89,12 @@ const findCodemod = async (transform, search_paths) => {
 
 			switch(value.type) {
 				case actions.matchFile().type:
-					if(!value.match.test(file))
-						return;
+					const doesMatch = value.match.test(file)
+
+					if(value.doMatch && !doesMatch) return;
+					else if(!value.doMatch && doesMatch) return;
+
+					sendNext = file;
 				break;
 				case actions.getFile().type:
 					log('getFile', value.filename);
@@ -106,6 +110,19 @@ const findCodemod = async (transform, search_paths) => {
 				case actions.deleteSource().type:
 					log('deleteSource');
 					await async.deleteFile(file);
+				break;
+				case actions.fileExists().type:
+					log('fileExists', value.filename);
+					sendNext = await async.fileExists(value.filename);
+				break;
+				case actions.newFile().type:
+					log('newFile', value.filename);
+					if(await async.fileExists(value.filename)) {
+						throw new Error(`newFile: file (${value.filename}) allready exists`);
+					} else {
+						await async.writeFile(value.filename, value.content);
+					}
+				break;
 				case actions.log().type:
 					log(...value.args);
 				break;

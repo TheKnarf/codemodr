@@ -1,6 +1,7 @@
-const matchFile = match => ({
+const matchFile = (match, doMatch = true) => ({
 	type: 'matchFile',
 	match,
+	doMatch,
 });
 
 const getFile = filename => ({
@@ -26,6 +27,12 @@ const fileExists = filename => ({
 	filename,
 });
 
+const newFile = (filename, content) => ({
+	type: 'newFile',
+	filename,
+	content,
+});
+
 const log = (...args) => ({
 	type: 'log',
 	args,
@@ -38,5 +45,6 @@ module.exports = {
 	updateSource,
 	deleteSource,
 	fileExists,
+	newFile,
 	log,
 };
