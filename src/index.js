@@ -117,7 +117,7 @@ const findCodemod = async (transform, search_paths) => {
 				break;
 				case actions.newFile().type:
 					log('newFile', value.filename);
-					if(await async.fileExists(value.filename)) {
+					if(!value.overwrite && await async.fileExists(value.filename)) {
 						throw new Error(`newFile: file (${value.filename}) allready exists`);
 					} else {
 						await async.writeFile(value.filename, value.content);

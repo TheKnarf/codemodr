@@ -27,10 +27,11 @@ const fileExists = filename => ({
 	filename,
 });
 
-const newFile = (filename, content) => ({
+const newFile = (filename, content, overwrite = false) => ({
 	type: 'newFile',
 	filename,
 	content,
+	overwrite,
 });
 
 const log = (...args) => ({
