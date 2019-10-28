@@ -107,6 +107,7 @@ const findCodemod = async (transform, search_paths) => {
 				case actions.updateSource().type:
 					await async.writeFile(file, value.source);
 					log('updateSource');
+				break;
 				case actions.deleteSource().type:
 					log('deleteSource');
 					await async.deleteFile(file);
