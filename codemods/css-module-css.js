@@ -1,7 +1,7 @@
 const { fixClassName } = require('./helpers/className.js');
 
 export default function transformer(file, api) {
-	if(!/\.css$/.test(file.path)) {
+	if(!/\.css$/.test(file.path) && !/\.scss$/.test(file.path)) {
 		return;
 	}
 
