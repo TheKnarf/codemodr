@@ -43,6 +43,13 @@ const mkdir = async (path) => new Promise((resolve, reject) =>
 	})
 );
 
+const rename = async (oldPath, newPath) => new Promise((resolve, reject) =>
+	fs.rename(oldPath, newPath, (err) => {
+		if(err) return reject(err);
+		resolve();
+	})
+);
+
 module.exports = {
 	readFile,
 	writeFile,
@@ -50,4 +57,5 @@ module.exports = {
 	fileExists,
 	glob,
 	mkdir,
+	rename,
 };

@@ -112,6 +112,11 @@ const findCodemod = async (transform, search_paths) => {
 					log('deleteSource');
 					await async.deleteFile(file);
 				break;
+				case actions.renameSourceFileEnding().type:
+					const newName = file.replace(/\.[^/.]+$/, "") + value.filename;
+					log(`renameSourceFileEnding ${value.filename}, new filename: ${newName}`);
+					await async.rename(file, newName);
+				break;
 				case actions.fileExists().type:
 					log('fileExists', value.filename);
 					sendNext = await async.fileExists(value.filename);

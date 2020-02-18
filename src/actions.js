@@ -22,6 +22,11 @@ const deleteSource = () => ({
 	type: 'deleteSource',
 });
 
+const renameSourceFileEnding = filename => ({
+	type: 'renameSourceFileEnding',
+	filename,
+});
+
 const fileExists = filename => ({
 	type: 'fileExists',
 	filename,
@@ -45,6 +50,7 @@ module.exports = {
 	getSource,
 	updateSource,
 	deleteSource,
+	renameSourceFileEnding,
 	fileExists,
 	newFile,
 	log,
