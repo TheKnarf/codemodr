@@ -17,11 +17,12 @@
   },
   "homepage": "https://github.com/TheKnarf/codemodr",
   "devDependencies": {
-    "jest": "^24.8.0"
+    "jest": "^25.1.0",
+    "jscodeshift": "^0.7.0"
   },
   "dependencies": {
     "commander": "^2.20.0",
-    "glob": "^7.1.4"
+    "glob": "^7.1.6"
   },
   "bin": {
     "codemodr": "./src/index.js"
