@@ -1,9 +1,20 @@
-const packageLock = function* ({ matchFile, deleteSource }) {
+const packageLock = function* ({ matchFile, deleteSource, log }) {
 	yield matchFile(/^package\-lock\.json$/i);
-	console.log('Yarn doesn\'t use package-lock files');
+	yield log('Yarn doesn\'t use package-lock files');
 	yield deleteSource();
 }
 
+const packageJson = function* ({ matchFile, getSource, log }) {
+	yield matchFile(/^package\.json$/);
+	const source = JSON.parse(
+		yield getSource()
+	);
+
+	if(typeof source.workspaces == 'undefined') {
+		yield log('package.json is missing workspace propertie');
+	}
+}
+
 module.exports = {
-	default: packageLock
+	default: packageJson//packageLock
 };

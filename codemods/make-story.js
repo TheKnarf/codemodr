@@ -1,6 +1,30 @@
+const fixNaming = name =>
+	name	
+    .replace(
+		 /\-+./gi,
+		 x => x.substring(x.length-1).toUpperCase()
+	 )
+	.replace(
+		 /\.+./gi,
+		 x => x.substring(x.length-1).toUpperCase()
+	 );
+
 const parse_name = input_name => {
 	const [ _, path, name, ending ] = input_name.match(/(.*)\/(.*)\.(tsx|jsx|js|ts)$/i);
 	return { path, name, ending };
+};
+
+const roots_to_trim = [
+	'src/',
+];
+
+const trim_roots = (roots_to_trim, path) => {
+	for (var i in roots_to_trim) {
+		if(path.startsWith(roots_to_trim[i])) {
+			return path.substr(roots_to_trim[i].length);
+		}
+	}
+	return path;	
 };
 
 const runner = function* ({ matchFile, fileExists, newFile }) {
@@ -10,21 +34,22 @@ const runner = function* ({ matchFile, fileExists, newFile }) {
 	const { path, name, ending } = parse_name(filename),
 			story_filename = `./${path}/${name}.stories.${ending}`;
 
-	if(yield fileExists(story_filename))
-		return;
+	//if(yield fileExists(story_filename)) return;
 
 	// TODO: check source to find list of exports
 	//const source = yield getSource();
 	
+	const new_path = trim_roots(roots_to_trim, path);
+
 	const story_source = `import React from 'react';
-import ${name} from './${name}';
+import ${fixNaming(name)} from './${name}';
 
-export default { title: '${name}' };
+export default { title: '${new_path}/${name}' };
 
-export const Empty = () => <> Empty </>;
+export const Todo = () => <> TODO: Add stories for your component </>;
 `;
 
-	yield newFile(story_filename, story_source);
+	yield newFile(story_filename, story_source, true);
 }
 
 module.exports = {

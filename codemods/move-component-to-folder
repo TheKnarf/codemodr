@@ -13,7 +13,7 @@ program
 	.option('-i, --ignore [pattern]', 'Ignore a pattern', ignorePatterns, [])
 	.parse(process.argv);
 
-const pattern = [...program.args, "**/*.jsx"].join('/');
+const pattern = [...program.args, "**/*.tsx"].join('/');
 console.log(`Looking for files matching pattern: ${pattern}`);
 
 const ignore = file => {
