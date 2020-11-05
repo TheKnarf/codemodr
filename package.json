@@ -25,7 +25,7 @@
     "glob": "^7.1.6"
   },
   "bin": {
-    "codemodr": "./src/index.js"
+    "codemodr": "src/index.js"
   },
   "files": [
     "src/**/*"
