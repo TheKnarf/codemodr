@@ -9,3 +9,15 @@ A codemod runner supporting ES6 generators.
 ```
 npm install --global codemodr
 ```
+
+## Config
+
+You can configure folders where Codemodr will look for codemods by creating a config file in your home directory called `.codemodr`:
+
+```
+exports.default = {
+	codemods: [
+		{ folder: "/Users/user/projects/codemodr/codemods/" }
+	]
+}
+```
