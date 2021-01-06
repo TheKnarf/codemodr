@@ -44,9 +44,16 @@ const runner = function* ({ matchFile, fileExists, newFile }) {
 	const story_source = `import React from 'react';
 import ${fixNaming(name)} from './${name}';
 
-export default { title: '${new_path}/${name}' };
+export default {
+	title: '${new_path}/${name}',
+};
 
-export const Todo = () => <> TODO: Add stories for your component </>;
+export const Default = ({ ...args }) => (
+	<${fixNaming(name)} {...args} />
+);
+Default.args = {
+
+};
 `;
 
 	yield newFile(story_filename, story_source, true);
